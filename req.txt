@@ -1,0 +1,6 @@
+numpy
+tox
+pytest
+isort
+mypy
+black

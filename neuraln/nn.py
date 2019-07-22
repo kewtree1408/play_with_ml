@@ -32,10 +32,12 @@ class NeuralNetwork1HiddenLayer:
         - an output layer with 1 neuron (o1)
         """
         weights_size = 6
-        bias_size = 6
+        bias_size = 3
 
-        self.weights = np.array([np.random.normal() for _ in range(weights_size)])
-        self.bias = np.array([np.random.normal() for _ in range(bias_size)])
+        # self.weights = np.array([np.random.normal() for _ in range(weights_size)])
+        # self.biases = np.array([np.random.normal() for _ in range(bias_size)])
+        self.weights = np.array([0.0 for _ in range(weights_size)])
+        self.biases = np.array([0.0 for _ in range(bias_size)])
 
         self.learning_rate = 0.1
         self.epochs = 1000
@@ -48,22 +50,21 @@ class NeuralNetwork1HiddenLayer:
         hiddenn_weights_2 = self.weights[2:4]
         outputn_weights = self.weights[4:]
 
-        self.hidden_neuron_1 = Neuron(hiddenn_weights_1, self.bias[0])
-        self.hidden_neuron_2 = Neuron(hiddenn_weights_2, self.bias[1])
-        self.output_neuron = Neuron(outputn_weights, self.bias[2])
+        self.hidden_neuron_1 = Neuron(hiddenn_weights_1, self.biases[0])
+        self.hidden_neuron_2 = Neuron(hiddenn_weights_2, self.biases[1])
+        self.output_neuron = Neuron(outputn_weights, self.biases[2])
 
     def feedforward(self, inputs):
-        assert inputs.shape == self.weights.shape
-
         self.setup_neurons()
         ffd_hidden_1 = self.hidden_neuron_1.feedforward(inputs)
         ffd_hidden_2 = self.hidden_neuron_2.feedforward(inputs)
         hidden_inputs = np.array([ffd_hidden_1, ffd_hidden_2])
         return self.output_neuron.feedforward(hidden_inputs)
 
-    def backpropagation(self, train_data, y_true, y_pred):
+    def backpropagation(self, train_data, y_true):
 
-        assert train_data.shape == 2
+        assert train_data.shape[0] == 2
+        y_pred = self.feedforward(train_data)
         d_L_d_ypred = -2 * (y_true - y_pred)
 
         self.setup_neurons()
@@ -87,34 +88,37 @@ class NeuralNetwork1HiddenLayer:
         # Neuron h2
         d_h2_d_w3 = train_data[0] * sigmoid_deriv(sum_h2)
         d_h2_d_w4 = train_data[1] * sigmoid_deriv(sum_h2)
-        d_h2_d_b2 = deriv_sigmoid(sum_h2)
+        d_h2_d_b2 = sigmoid_deriv(sum_h2)
 
         backprop_weights = np.array([
-            self.learn_rate * d_L_d_ypred * d_ypred_d_h1 * d_h1_d_w1,
-            self.learn_rate * d_L_d_ypred * d_ypred_d_h1 * d_h1_d_w2,
-            self.learn_rate * d_L_d_ypred * d_ypred_d_h2 * d_h1_d_w3,
-            self.learn_rate * d_L_d_ypred * d_ypred_d_h2 * d_h1_d_w4,
-            self.learn_rate * d_L_d_ypred * d_ypred_d_w5,
-            self.learn_rate * d_L_d_ypred * d_ypred_d_w6,
+            self.learning_rate * d_L_d_ypred * d_ypred_d_h1 * d_h1_d_w1,
+            self.learning_rate * d_L_d_ypred * d_ypred_d_h1 * d_h1_d_w2,
+            self.learning_rate * d_L_d_ypred * d_ypred_d_h2 * d_h2_d_w3,
+            self.learning_rate * d_L_d_ypred * d_ypred_d_h2 * d_h2_d_w4,
+            self.learning_rate * d_L_d_ypred * d_ypred_d_w5,
+            self.learning_rate * d_L_d_ypred * d_ypred_d_w6,
         ])
-        backprop_bias = np.array(
-            self.learn_rate * d_L_d_ypred * d_ypred_d_h1 * d_h1_d_b1,
-            self.learn_rate * d_L_d_ypred * d_ypred_d_h2 * d_h1_d_b2,
-            self.learn_rate * d_L_d_ypred * d_ypred_d_b3,
-        )
-        return backprop_weights, backprop_bias
+        backprop_biases = np.array([
+            self.learning_rate * d_L_d_ypred * d_ypred_d_h1 * d_h1_d_b1,
+            self.learning_rate * d_L_d_ypred * d_ypred_d_h2 * d_h2_d_b2,
+            self.learning_rate * d_L_d_ypred * d_ypred_d_b3,
+        ])
+        import ipdb; ipdb.set_trace()
+        return backprop_weights, backprop_biases
 
     def train(self, train_data, y_trues):
         for epoch in range(self.epochs):
             for input_data, y_true in zip(train_data, y_trues):
                 y_pred = self.feedforward(input_data)
-                backprop_weights, backprop_biases = self.backpropagartion(y_true, y_pred)
+                backprop_weights, backprop_biases = self.backpropagation(input_data, y_true)
+                # import ipdb; ipdb.set_trace()
                 self.weights -= backprop_weights
-                self.bias -= backprop_biases
-
-            y_preds = np.apply_along_axes(self.feedforward, 1, train_data)
-            loss = mse(y_trues, y_preds)
-            print(f"Epoch {epoch} loss: {loss}")
+                self.biases -= backprop_biases
+                import ipdb; ipdb.set_trace()
+            if epoch % 10 == 0:
+                y_preds = np.apply_along_axis(self.feedforward, 1, train_data)
+                loss = mse(y_trues, y_preds)
+                print(f"Epoch {epoch} loss: {loss}")
 
     def prediction(self, inputs):
         # Return value which is predicted by network

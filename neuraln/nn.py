@@ -34,8 +34,7 @@ class NeuralNetwork1HiddenLayer:
         weights_size = 6
         bias_size = 3
 
-        # self.weights = np.array([np.random.normal() for _ in range(weights_size)])
-        # self.biases = np.array([np.random.normal() for _ in range(bias_size)])
+        # all zeroes for simplier testing
         self.weights = np.array([0.0 for _ in range(weights_size)])
         self.biases = np.array([0.0 for _ in range(bias_size)])
 
@@ -61,12 +60,11 @@ class NeuralNetwork1HiddenLayer:
         hidden_inputs = np.array([ffd_hidden_1, ffd_hidden_2])
         return self.output_neuron.feedforward(hidden_inputs)
 
-    def backpropagation(self, train_data, y_true):
-
-        assert train_data.shape[0] == 2
+    def get_all_partial_derivatives(self, train_data, y_true):
         y_pred = self.feedforward(train_data)
         d_L_d_ypred = -2 * (y_true - y_pred)
 
+        # Update weights for Neuron
         self.setup_neurons()
         sum_h1 = self.hidden_neuron_1.act_sum(train_data)
         sum_h2 = self.hidden_neuron_2.act_sum(train_data)
@@ -90,6 +88,38 @@ class NeuralNetwork1HiddenLayer:
         d_h2_d_w4 = train_data[1] * sigmoid_deriv(sum_h2)
         d_h2_d_b2 = sigmoid_deriv(sum_h2)
 
+        return (
+            d_L_d_ypred,
+            d_h1_d_w1,
+            d_h1_d_w2,
+            d_h1_d_b1,
+            d_h2_d_w3,
+            d_h2_d_w4,
+            d_h2_d_b2,
+            d_ypred_d_h1,
+            d_ypred_d_h2,
+            d_ypred_d_w5,
+            d_ypred_d_w6,
+            d_ypred_d_b3
+        )
+
+    def backpropagation(self, train_data, y_true):
+        assert train_data.shape[0] == 2
+        (
+            d_L_d_ypred,
+            d_h1_d_w1,
+            d_h1_d_w2,
+            d_h1_d_b1,
+            d_h2_d_w3,
+            d_h2_d_w4,
+            d_h2_d_b2,
+            d_ypred_d_h1,
+            d_ypred_d_h2,
+            d_ypred_d_w5,
+            d_ypred_d_w6,
+            d_ypred_d_b3
+        ) = self.get_all_partial_derivatives(train_data, y_true)
+
         backprop_weights = np.array([
             self.learning_rate * d_L_d_ypred * d_ypred_d_h1 * d_h1_d_w1,
             self.learning_rate * d_L_d_ypred * d_ypred_d_h1 * d_h1_d_w2,
@@ -103,7 +133,7 @@ class NeuralNetwork1HiddenLayer:
             self.learning_rate * d_L_d_ypred * d_ypred_d_h2 * d_h2_d_b2,
             self.learning_rate * d_L_d_ypred * d_ypred_d_b3,
         ])
-        import ipdb; ipdb.set_trace()
+        # import ipdb; ipdb.set_trace()
         return backprop_weights, backprop_biases
 
     def train(self, train_data, y_trues):
@@ -114,7 +144,7 @@ class NeuralNetwork1HiddenLayer:
                 # import ipdb; ipdb.set_trace()
                 self.weights -= backprop_weights
                 self.biases -= backprop_biases
-                import ipdb; ipdb.set_trace()
+                # import ipdb; ipdb.set_trace()
             if epoch % 10 == 0:
                 y_preds = np.apply_along_axis(self.feedforward, 1, train_data)
                 loss = mse(y_trues, y_preds)

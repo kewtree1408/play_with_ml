@@ -54,25 +54,27 @@ class NeuralNetwork1HiddenLayer:
         self.output_neuron = Neuron(outputn_weights, self.biases[2])
 
     def feedforward(self, inputs):
-        self.setup_neurons()
         ffd_hidden_1 = self.hidden_neuron_1.feedforward(inputs)
         ffd_hidden_2 = self.hidden_neuron_2.feedforward(inputs)
-        hidden_inputs = np.array([ffd_hidden_1, ffd_hidden_2])
-        return self.output_neuron.feedforward(hidden_inputs)
+        self.hidden_inputs = np.array([ffd_hidden_1, ffd_hidden_2])
+        return self.output_neuron.feedforward(self.hidden_inputs)
 
-    def get_all_partial_derivatives(self, train_data, y_true):
-        y_pred = self.feedforward(train_data)
+    def backpropagation(self, train_data, y_true, y_pred):
+        assert train_data.shape[0] == 2
         d_L_d_ypred = -2 * (y_true - y_pred)
 
         # Update weights for Neuron
-        self.setup_neurons()
         sum_h1 = self.hidden_neuron_1.act_sum(train_data)
         sum_h2 = self.hidden_neuron_2.act_sum(train_data)
-        sum_o1 = self.output_neuron.act_sum(train_data)
+        sum_o1 = self.output_neuron.act_sum(self.hidden_inputs)
 
         # Output neuron
-        d_ypred_d_w5 = self.hidden_neuron_1.feedforward(train_data) * sigmoid_deriv(sum_o1)
-        d_ypred_d_w6 = self.hidden_neuron_2.feedforward(train_data) * sigmoid_deriv(sum_o1)
+        d_ypred_d_w5 = self.hidden_neuron_1.feedforward(train_data) * sigmoid_deriv(
+            sum_o1
+        )
+        d_ypred_d_w6 = self.hidden_neuron_2.feedforward(train_data) * sigmoid_deriv(
+            sum_o1
+        )
         d_ypred_d_b3 = sigmoid_deriv(sum_o1)
 
         d_ypred_d_h1 = self.weights[4] * sigmoid_deriv(sum_o1)
@@ -88,67 +90,39 @@ class NeuralNetwork1HiddenLayer:
         d_h2_d_w4 = train_data[1] * sigmoid_deriv(sum_h2)
         d_h2_d_b2 = sigmoid_deriv(sum_h2)
 
-        return (
-            d_L_d_ypred,
-            d_h1_d_w1,
-            d_h1_d_w2,
-            d_h1_d_b1,
-            d_h2_d_w3,
-            d_h2_d_w4,
-            d_h2_d_b2,
-            d_ypred_d_h1,
-            d_ypred_d_h2,
-            d_ypred_d_w5,
-            d_ypred_d_w6,
-            d_ypred_d_b3
+        backprop_weights = np.array(
+            [
+                self.learning_rate * d_L_d_ypred * d_ypred_d_h1 * d_h1_d_w1,
+                self.learning_rate * d_L_d_ypred * d_ypred_d_h1 * d_h1_d_w2,
+                self.learning_rate * d_L_d_ypred * d_ypred_d_h2 * d_h2_d_w3,
+                self.learning_rate * d_L_d_ypred * d_ypred_d_h2 * d_h2_d_w4,
+                self.learning_rate * d_L_d_ypred * d_ypred_d_w5,
+                self.learning_rate * d_L_d_ypred * d_ypred_d_w6,
+            ]
         )
-
-    def backpropagation(self, train_data, y_true):
-        assert train_data.shape[0] == 2
-        (
-            d_L_d_ypred,
-            d_h1_d_w1,
-            d_h1_d_w2,
-            d_h1_d_b1,
-            d_h2_d_w3,
-            d_h2_d_w4,
-            d_h2_d_b2,
-            d_ypred_d_h1,
-            d_ypred_d_h2,
-            d_ypred_d_w5,
-            d_ypred_d_w6,
-            d_ypred_d_b3
-        ) = self.get_all_partial_derivatives(train_data, y_true)
-
-        backprop_weights = np.array([
-            self.learning_rate * d_L_d_ypred * d_ypred_d_h1 * d_h1_d_w1,
-            self.learning_rate * d_L_d_ypred * d_ypred_d_h1 * d_h1_d_w2,
-            self.learning_rate * d_L_d_ypred * d_ypred_d_h2 * d_h2_d_w3,
-            self.learning_rate * d_L_d_ypred * d_ypred_d_h2 * d_h2_d_w4,
-            self.learning_rate * d_L_d_ypred * d_ypred_d_w5,
-            self.learning_rate * d_L_d_ypred * d_ypred_d_w6,
-        ])
-        backprop_biases = np.array([
-            self.learning_rate * d_L_d_ypred * d_ypred_d_h1 * d_h1_d_b1,
-            self.learning_rate * d_L_d_ypred * d_ypred_d_h2 * d_h2_d_b2,
-            self.learning_rate * d_L_d_ypred * d_ypred_d_b3,
-        ])
-        # import ipdb; ipdb.set_trace()
+        backprop_biases = np.array(
+            [
+                self.learning_rate * d_L_d_ypred * d_ypred_d_h1 * d_h1_d_b1,
+                self.learning_rate * d_L_d_ypred * d_ypred_d_h2 * d_h2_d_b2,
+                self.learning_rate * d_L_d_ypred * d_ypred_d_b3,
+            ]
+        )
         return backprop_weights, backprop_biases
 
     def train(self, train_data, y_trues):
         for epoch in range(self.epochs):
             for input_data, y_true in zip(train_data, y_trues):
+                self.setup_neurons()
                 y_pred = self.feedforward(input_data)
-                backprop_weights, backprop_biases = self.backpropagation(input_data, y_true)
-                # import ipdb; ipdb.set_trace()
+                backprop_weights, backprop_biases = self.backpropagation(
+                    input_data, y_true, y_pred
+                )
                 self.weights -= backprop_weights
                 self.biases -= backprop_biases
-                # import ipdb; ipdb.set_trace()
             if epoch % 10 == 0:
                 y_preds = np.apply_along_axis(self.feedforward, 1, train_data)
                 loss = mse(y_trues, y_preds)
-                print(f"Epoch {epoch} loss: {loss}")
+        return loss
 
     def prediction(self, inputs):
         # Return value which is predicted by network
@@ -157,30 +131,23 @@ class NeuralNetwork1HiddenLayer:
 
 def main():
     # Define dataset
-    input_data = np.array([
-        [-2, -1],  # Alice
-        [25, 6],   # Bob
-        [17, 4],   # Charlie
-        [-15, -6], # Diana
-    ])
-    all_y_trues = np.array([
-        1, # Alice
-        0, # Bob
-        0, # Charlie
-        1, # Diana
-    ])
+    input_data = np.array(
+        [[-2, -1], [25, 6], [17, 4], [-15, -6]]  # Alice  # Bob  # Charlie  # Diana
+    )
+    all_y_trues = np.array([1, 0, 0, 1])  # Alice  # Bob  # Charlie  # Diana
 
     # Train our neural network!
     network = NeuralNetwork1HiddenLayer()
     network.train(input_data, all_y_trues)
 
     # Make some predictions
-    emily = np.array([-7, -3]) # 128 pounds, 63 inches
+    emily = np.array([-7, -3])  # 128 pounds, 63 inches
     frank = np.array([20, 2])  # 155 pounds, 68 inches
 
     # TODO: add this check into test
-    print("Emily: %.3f" % network.feedforward(emily)) # 0.951 - F
-    print("Frank: %.3f" % network.feedforward(frank)) # 0.039 - M
+    print("Emily: %.3f" % network.feedforward(emily))  # 0.951 - F
+    print("Frank: %.3f" % network.feedforward(frank))  # 0.039 - M
+
 
 if __name__ == "__main__":
     main()

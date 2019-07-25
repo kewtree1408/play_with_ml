@@ -26,8 +26,7 @@ class Conv3x3:
 
     def apply_filters(self, input_image: np.ndarray) -> np.ndarray:
         height, length = input_image.shape
-        output_data = np.zeros((self.filters_amount, height-2, length-2))
-        import ipdb; ipdb.set_trace()
+        output_data = np.zeros((height-2, length-2, self.filters_amount))
         for img_part, i, j in self.divide_input(input_image):
             output_data[i, j] = np.sum(img_part * self.filters, axis=(1, 2))
             # for conv_filter in self.filters:

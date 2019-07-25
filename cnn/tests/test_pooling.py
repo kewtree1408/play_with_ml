@@ -1,82 +1,78 @@
 import numpy as np
 
-from conv import Conv3x3
+from pooling import Pooling2
 
 
 # Tests for this example:
-# http://deeplearning.net/software/theano/_images/numerical_no_padding_no_strides.gif
+# https://victorzhou.com/pool-ac441205fd06dc037b3db2dbf05660f7.gif
 
-def test_dot_sum():
-    cnn_filter = np.array([
-        [0, 1, 2],
-        [2, 2, 0],
-        [0, 1, 2]
-    ])
+def test_divide_input_3x3():
+    p = Pooling2()
     input_data = np.array([
-        [3, 3, 2],
-        [0, 0, 1],
-        [3, 1, 2],
+        [0, 50, 0],
+        [0, 80, 31],
+        [33, 90, 0],
     ])
-    assert Conv3x3.dot_sum(input_data, cnn_filter) == 12
-
-def test_divide_input():
-    input_data = np.array([
-        [3, 3, 2, 1, 0],
-        [0, 0, 1, 3, 1],
-        [3, 1, 2, 2, 3],
-        [2, 0, 0, 2, 2],
-        [2, 0, 0, 0, 1],
-    ])
-    expected_shape = 9
+    expected_shape = (2, 2)
     expected_parts = [
         (np.array([
-            [3, 3, 2],
-            [0, 0, 1],
-            [3, 1, 2],
+            [0, 50],
+            [0, 80],
         ]), 0, 0),
         (np.array([
-            [3, 2, 1],
-            [0, 1, 3],
-            [1, 2, 2],
-        ]), 0, 1),
-        (np.array([
-            [2, 1, 0],
-            [1, 3, 1],
-            [2, 2, 3],
-        ]), 0, 2),
-        (np.array([
-            [0, 0, 1],
-            [3, 1, 2],
-            [2, 0, 0],
+            [33, 90],
+            [0, 9],
         ]), 1, 0),
         (np.array([
-            [0, 1, 3],
-            [1, 2, 2],
-            [0, 0, 2],
+            [0, 29],
+            [31, 2],
+        ]), 0, 1),
+        (np.array([
+            [0, 75],
+            [0, 95],
         ]), 1, 1),
-        (np.array([
-            [1, 3, 1],
-            [2, 2, 3],
-            [0, 2, 2],
-        ]), 1, 2),
-        (np.array([
-            [3, 1, 2],
-            [2, 0, 0],
-            [2, 0, 0],
-        ]), 2, 0),
-        (np.array([
-            [1, 2, 2],
-            [0, 0, 2],
-            [0, 0, 0],
-        ]), 2, 1),
-        (np.array([
-            [2, 2, 3],
-            [0, 2, 2],
-            [0, 0, 1],
-        ]), 2, 2),
     ]
 
-    divided_parts = list(Conv3x3.divide_input(input_data))
+    divided_parts = list(p.divide_input(input_data))
+    import ipdb; ipdb.set_trace()
+    assert len(divided_parts) == expected_shape
+    for res, expected in zip(divided_parts, expected_parts):
+        part_result, i_result, j_result = res
+        part_expected, i_expected, j_expected = expected
+        assert i_result == i_expected
+        assert j_result == j_expected
+        np.testing.assert_array_equal(part_result, part_expected)
+
+
+def test_divide_input_4x4():
+    p = Pooling2()
+    input_data = np.array([
+        [0, 50, 0, 29],
+        [0, 80, 31, 2],
+        [33, 90, 0, 75],
+        [0, 9, 0, 95],
+    ])
+    expected_shape = (2, 2)
+    expected_parts = [
+        (np.array([
+            [0, 50],
+            [0, 80],
+        ]), 0, 0),
+        (np.array([
+            [33, 90],
+            [0, 9],
+        ]), 1, 0),
+        (np.array([
+            [0, 29],
+            [31, 2],
+        ]), 0, 1),
+        (np.array([
+            [0, 75],
+            [0, 95],
+        ]), 1, 1),
+    ]
+
+    divided_parts = list(p.divide_input(input_data))
     assert len(divided_parts) == expected_shape
     for res, expected in zip(divided_parts, expected_parts):
         part_result, i_result, j_result = res

@@ -8,9 +8,26 @@ class Pooling2:
         self.size = 2
         self.pooling_method = np.max
 
+    @staticmethod
+    def even_size(input_filters):
+        height, length, num_filters = input_filters.shape
+        if height % 2 == 0 and length % 2 == 0:
+            return True
+        return False
+
+    @staticmethod
+    def zero_padding(input_filters):
+        height, length, num_filters = input_filters.shape
+        if height % 2 != 0:
+            ...
+
     def divide_input(self, input_filters: np.ndarray) -> Generator[Tuple[np.ndarray, int, int], None, None]:
         """input_image is 2D"""
+        even = self.even_size(input_filters)
+        if not even:
+            input_filters = self.zero_padding(input_filters)
         height, length, num_filters = input_filters.shape
+
         h = height // self.size
         l = length // self.size
 
@@ -20,7 +37,7 @@ class Pooling2:
                 i_jump = i*jump
                 j_jump = j*jump
                 yield input_filters[
-                    i_jump:j_jump+jump,
+                    i_jump:i_jump+jump,
                     j_jump:j_jump+jump
                 ], i, j
 

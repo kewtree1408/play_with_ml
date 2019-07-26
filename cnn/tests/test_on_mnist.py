@@ -13,6 +13,6 @@ def test_mnist_shape():
     # Learn more at https://github.com/datapythonista/mnist
 
     conv = Conv3x3(8)
-    output = conv.forward(TRAIN_IMAGES[0])
+    output = conv.convolve(TRAIN_IMAGES[0])
     expected_shape = (26, 26, 8)
     assert output.shape == expected_shape

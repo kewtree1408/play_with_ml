@@ -17,9 +17,14 @@ class Pooling2:
 
     @staticmethod
     def zero_padding(input_filters):
+        # TODO: test
         height, length, num_filters = input_filters.shape
+        zero_padded_filters = input_filters
         if height % 2 != 0:
-            ...
+            zero_padded_filters = np.insert(zero_padded_filters, height, 0, axis=1)
+        if length % 2 != 0:
+            zero_padded_filters = np.insert(zero_padded_filters, length, 0, axis=2)
+        return zero_padded_filters
 
     def divide_input(self, input_filters: np.ndarray) -> Generator[Tuple[np.ndarray, int, int], None, None]:
         """input_image is 2D"""

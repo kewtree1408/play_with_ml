@@ -1,6 +1,7 @@
 import numpy as np
 
 from conv import Conv3x3
+from pooling import Pooling2
 import mnist
 
 # Download MNIST dataset
@@ -16,3 +17,7 @@ def test_mnist_shape():
     output = conv.convolve(TRAIN_IMAGES[0])
     expected_shape = (26, 26, 8)
     assert output.shape == expected_shape
+
+    p = Pooling2()
+    output = p.pool(output)
+    assert output.shape == (13, 13, 8)

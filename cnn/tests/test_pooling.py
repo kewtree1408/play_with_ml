@@ -146,11 +146,35 @@ def test_divide_2_filters():
     ])
     filter2 = filter2[:, :, np.newaxis]
     filters = np.concatenate((filter1, filter2), axis=2)
-    expected_parts = []
+    expected_parts = [
+        (np.array([
+            [[ 0,  0],
+            [50, 55]],
+            [[ 0, 20],
+            [80,  0]]]), 0, 0
+        ),
+        (np.array([
+            [[ 0,  0],
+            [29, 29]],
+            [[31, 41],
+            [ 2, 33]]]), 0, 1
+        ),
+        (np.array([
+            [[33,  0],
+            [90, 90]],
+            [[ 0,  0],
+            [ 9, 57]]]), 1, 0
+        ),
+        (np.array([
+            [[ 0,  0],
+            [75,  0]],
+            [[ 0,  0],
+            [95, 95]]]), 1, 1
+        )
+    ]
 
     p = Pooling2()
     divided_parts = list(p.divide_input(filters))
-    import ipdb; ipdb.set_trace()
     assert len(divided_parts) == 4
     for res, expected in zip(divided_parts, expected_parts):
         _assert_divided_parts(res, expected)
@@ -172,10 +196,18 @@ def test_pool():
         [0, 57, 0, 95],
     ])
     filter2 = filter2[:, :, np.newaxis]
-    filters = np.append(filter1, filter2).reshape(4,4,2)
+    filters = np.concatenate((filter1, filter2), axis=2)
 
     p = Pooling2()
     res = p.pool(filters)
-    expected = np.array([])
-    import ipdb; ipdb.set_trace()
+    expected = np.array([
+        [
+            [80, 55],
+            [31, 41]
+        ],
+        [
+            [90, 90],
+            [95, 95]
+        ]
+    ])
     np.testing.assert_array_equal(res, expected)

@@ -53,6 +53,6 @@ class Pooling2:
 
         output = np.zeros((h, l, num_filters))
         for part, i, j in self.divide_input(input_filters):
-            import ipdb; ipdb.set_trace()
+            # import ipdb; ipdb.set_trace()
             output[i, j] = np.max(part, axis=(0,1))
         return output

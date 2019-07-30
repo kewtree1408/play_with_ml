@@ -188,7 +188,6 @@ def test_pool():
         [0, 9, 0, 95],
     ])
     filter1 = filter1[:, :, np.newaxis]
-    # https://victorzhou.com/media/cnn-post/maxpool-forward.svg
     filter2 = np.array([
         [0, 55, 0, 29],
         [20, 0, 41, 33],

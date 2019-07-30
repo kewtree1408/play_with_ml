@@ -25,7 +25,9 @@ class Pooling2:
             zero_padded_filters = np.insert(zero_padded_filters, length, 0, axis=1)
         return zero_padded_filters
 
-    def divide_input(self, input_filters: np.ndarray) -> Generator[Tuple[np.ndarray, int, int], None, None]:
+    def divide_input(
+        self, input_filters: np.ndarray
+    ) -> Generator[Tuple[np.ndarray, int, int], None, None]:
         """input_image is 2D"""
         even = self.is_even(input_filters)
         if not even:
@@ -38,11 +40,10 @@ class Pooling2:
         jump = self.size
         for i in range(h):
             for j in range(l):
-                i_jump = i*jump
-                j_jump = j*jump
+                i_jump = i * jump
+                j_jump = j * jump
                 yield input_filters[
-                    i_jump:i_jump+jump,
-                    j_jump:j_jump+jump
+                    i_jump : i_jump + jump, j_jump : j_jump + jump
                 ], i, j
 
     def pool(self, input_filters):
@@ -54,5 +55,5 @@ class Pooling2:
         output = np.zeros((h, l, num_filters))
         for part, i, j in self.divide_input(input_filters):
             # import ipdb; ipdb.set_trace()
-            output[i, j] = np.max(part, axis=(0,1))
+            output[i, j] = np.max(part, axis=(0, 1))
         return output

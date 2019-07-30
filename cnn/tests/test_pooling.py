@@ -1,7 +1,6 @@
 import numpy as np
 
-from pooling import Pooling2
-
+from pooling import MaxPoolLayer2
 
 # Tests for this example:
 # https://victorzhou.com/pool-ac441205fd06dc037b3db2dbf05660f7.gif
@@ -21,22 +20,22 @@ def test_is_even():
         [[0, 50, 0, 29], [0, 80, 31, 2], [33, 90, 0, 75], [0, 9, 0, 95]]
     )
     input_data_3d = input_data[:, :, np.newaxis]
-    assert Pooling2.is_even(input_data_3d) is True
+    assert MaxPoolLayer2.is_even(input_data_3d) is True
 
     input_data = np.array([[0, 50, 0], [0, 80, 31], [33, 90, 0]])
     input_data_3d = input_data[:, :, np.newaxis]
-    assert Pooling2.is_even(input_data_3d) is False
+    assert MaxPoolLayer2.is_even(input_data_3d) is False
 
     input_data = np.array([[0, 50, 0], [0, 80, 31]])
     input_data_3d = input_data[:, :, np.newaxis]
-    assert Pooling2.is_even(input_data_3d) is False
+    assert MaxPoolLayer2.is_even(input_data_3d) is False
 
 
 def test_zero_padding_3x3():
     input_data = np.array([[0, 50, 0], [0, 80, 31], [33, 90, 0]])
     input_data_3d = input_data[:, :, np.newaxis]
 
-    res = Pooling2.zero_padding(input_data_3d)
+    res = MaxPoolLayer2.zero_padding(input_data_3d)
     expected = np.array(
         [
             [[0], [50], [0], [0]],
@@ -59,7 +58,7 @@ def test_divide_input_3x3():
     ]
     input_data_3d = input_data[:, :, np.newaxis]
 
-    p = Pooling2()
+    p = MaxPoolLayer2()
     divided_parts = list(p.divide_input(input_data_3d))
 
     assert len(divided_parts) == expected_shape
@@ -79,7 +78,7 @@ def test_divide_input_4x4():
         (np.array([[0, 75], [0, 95]]), 1, 1),
     ]
 
-    p = Pooling2()
+    p = MaxPoolLayer2()
     divided_parts = list(p.divide_input(input_data_3d))
 
     assert len(divided_parts) == 4
@@ -100,7 +99,7 @@ def test_divide_2_filters():
         (np.array([[[0, 0], [75, 0]], [[0, 0], [95, 95]]]), 1, 1),
     ]
 
-    p = Pooling2()
+    p = MaxPoolLayer2()
     divided_parts = list(p.divide_input(filters))
     assert len(divided_parts) == 4
     for res, expected in zip(divided_parts, expected_parts):
@@ -114,7 +113,7 @@ def test_pool():
     filter2 = filter2[:, :, np.newaxis]
     filters = np.concatenate((filter1, filter2), axis=2)
 
-    p = Pooling2()
+    p = MaxPoolLayer2()
     res = p.pool(filters)
     expected = np.array([[[80, 55], [31, 41]], [[90, 90], [95, 95]]])
     np.testing.assert_array_equal(res, expected)

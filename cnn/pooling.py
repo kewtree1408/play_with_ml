@@ -1,8 +1,9 @@
-import numpy as np
 from typing import Generator, Tuple
 
+import numpy as np
 
-class Pooling2:
+
+class MaxPoolLayer2:
     # Pooling with size 2
     def __init__(self):
         self.size = 2

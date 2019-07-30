@@ -1,7 +1,6 @@
 import numpy as np
 
-from conv import Conv3x3
-
+from conv import ConvLayer3x3
 
 # Tests for this example:
 # http://deeplearning.net/software/theano/_images/numerical_no_padding_no_strides.gif
@@ -10,7 +9,7 @@ from conv import Conv3x3
 def test_dot_sum():
     cnn_filter = np.array([[0, 1, 2], [2, 2, 0], [0, 1, 2]])
     input_data = np.array([[3, 3, 2], [0, 0, 1], [3, 1, 2]])
-    assert Conv3x3.dot_sum(input_data, cnn_filter) == 12
+    assert ConvLayer3x3.dot_sum(input_data, cnn_filter) == 12
 
 
 def test_divide_input():
@@ -36,7 +35,7 @@ def test_divide_input():
         (np.array([[2, 2, 3], [0, 2, 2], [0, 0, 1]]), 2, 2),
     ]
 
-    divided_parts = list(Conv3x3.divide_input(input_data))
+    divided_parts = list(ConvLayer3x3.divide_input(input_data))
     assert len(divided_parts) == expected_shape
     for res, expected in zip(divided_parts, expected_parts):
         part_result, i_result, j_result = res
@@ -48,7 +47,7 @@ def test_divide_input():
 
 def test_convolve_1_filter():
     filters_amount = 1  # depth
-    cn = Conv3x3(filters_amount)
+    cn = ConvLayer3x3(filters_amount)
     input_data = np.array(
         [
             [3, 3, 2, 1, 0],
@@ -69,7 +68,7 @@ def test_convolve_1_filter():
 
 def test_convolve_3_filters():
     filters_amount = 3  # depth
-    cn = Conv3x3(filters_amount)
+    cn = ConvLayer3x3(filters_amount)
     # reassign filter for easier testing
     cn.filters = np.array(
         [

@@ -1,11 +1,12 @@
-import numpy as np
 from typing import Generator, Tuple
 
+import numpy as np
 
-class Conv3x3:
+
+class ConvLayer3x3:
     def __init__(self, filters_amount: int):
         self.filters_amount = filters_amount
-        self.filter_size = 3  # because Conv3x3, but can be any number
+        self.filter_size = 3  # because ConvLayer3x3, but can be any number
         # 9 - magic number for Xavier - ? TODO!
         self.filters = (
             np.random.rand(filters_amount, self.filter_size, self.filter_size) / 9

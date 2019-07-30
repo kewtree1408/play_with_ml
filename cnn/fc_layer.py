@@ -9,8 +9,11 @@ class FullyConnectedLayer:
     """
 
     def __init__(self, flatten_filters_amount, class_amount):
-        self.weights = np.random.randn(flatten_filters_amount, class_amount)
-        self.biases = np.random.randn(class_amount)
+        self.weights = (
+            np.random.randn(flatten_filters_amount, class_amount)
+            / flatten_filters_amount
+        )
+        self.biases = np.random.randn(class_amount) / class_amount
 
     def feedforward(self, filters):
         flat_filters = filters.flatten()

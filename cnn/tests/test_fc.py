@@ -18,16 +18,16 @@ def test_feedworward():
     res = fc.feedforward(filters)
     expected = np.array(
         [
-            0.00000000e000,
-            1.92947847e-192,
-            8.36569318e-304,
-            0.00000000e000,
-            3.82303629e-256,
-            3.69844747e-257,
-            9.69376399e-272,
-            3.68103332e-241,
-            1.15259295e-108,
-            1.00000000e000,
+            2.878495e-12,
+            9.043105e-07,
+            3.226238e-10,
+            4.065223e-14,
+            9.022273e-09,
+            8.888899e-09,
+            3.146241e-09,
+            3.353428e-08,
+            3.780579e-04,
+            9.996210e-01,
         ]
     )
-    np.testing.assert_allclose(res, expected)
+    np.testing.assert_allclose(res, expected, rtol=1e-05)

@@ -1,6 +1,6 @@
 import numpy as np
 
-from pooling import MaxPoolLayer2
+from maxpool_layer import MaxPoolLayer2
 
 # Tests for this example:
 # https://victorzhou.com/pool-ac441205fd06dc037b3db2dbf05660f7.gif

@@ -1,9 +1,9 @@
 import mnist
 import numpy as np
 
-from conv import ConvLayer3x3
+from conv_layer import ConvLayer3x3
 from fc_layer import FullyConnectedLayer
-from pooling import MaxPoolLayer2
+from maxpool_layer import MaxPoolLayer2
 
 # Download MNIST dataset
 TRAIN_IMAGES = mnist.train_images()

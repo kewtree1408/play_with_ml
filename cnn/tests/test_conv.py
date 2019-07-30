@@ -1,6 +1,6 @@
 import numpy as np
 
-from conv import ConvLayer3x3
+from conv_layer import ConvLayer3x3
 
 # Tests for this example:
 # http://deeplearning.net/software/theano/_images/numerical_no_padding_no_strides.gif

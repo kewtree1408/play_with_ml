@@ -4,10 +4,12 @@ import numpy as np
 from conv_layer import ConvLayer3x3
 from fc_layer import FullyConnectedLayer
 from maxpool_layer import MaxPoolLayer2
+from cnn import CNN
 
 # Download MNIST dataset
-TRAIN_IMAGES = mnist.train_images()
-TRAIN_LABELS = mnist.train_labels()
+FIRST_N = 100
+TRAIN_IMAGES = mnist.train_images()[:FIRST_N]
+TRAIN_LABELS = mnist.train_labels()[:FIRST_N]
 
 
 def test_mnist_shape():
@@ -26,3 +28,10 @@ def test_mnist_shape():
     fc = FullyConnectedLayer(np.prod(output.shape), amount_of_classes)
     output = fc.feedforward(output)
     assert output.shape == (amount_of_classes,)
+
+def test_mnist_train():
+    np.random.seed(0)
+    conv_net = CNN()
+    acc, loss = conv_net.train(TRAIN_IMAGES, TRAIN_LABELS)
+    assert acc == 9
+    assert np.around(loss, decimals=2) == 230.83

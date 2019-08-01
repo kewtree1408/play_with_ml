@@ -29,6 +29,7 @@ def test_mnist_shape():
     output = fc.feedforward(output)
     assert output.shape == (amount_of_classes,)
 
+
 def test_mnist_train():
     np.random.seed(0)
     conv_net = CNN()

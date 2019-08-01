@@ -19,13 +19,15 @@ class CNN:
 
         self.conv_layer = ConvLayer3x3(amount_of_filters)
         # -2 because the conv layer will shift 2 elements
-        conv_hight = image_hight-2
-        conv_width = image_width-2
+        conv_hight = image_hight - 2
+        conv_width = image_width - 2
         self.maxpool_layer = MaxPoolLayer2()
 
-        pool_hight = int(conv_hight/2)
-        pool_width = int(conv_width/2)
-        self.fc_layer = FullyConnectedLayer(pool_hight * pool_width * amount_of_filters, amount_of_classes)
+        pool_hight = int(conv_hight / 2)
+        pool_width = int(conv_width / 2)
+        self.fc_layer = FullyConnectedLayer(
+            pool_hight * pool_width * amount_of_filters, amount_of_classes
+        )
 
         output = self.conv_layer.convolve(image)
         output = self.maxpool_layer.pool(output)

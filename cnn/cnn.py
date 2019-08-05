@@ -9,13 +9,13 @@ class CNN:
     def __init__(self):
         self.epoches = 100
         self.softmax_loss = lambda x: -np.log(x)
+        self.amount_of_classes = 10
 
     def feedforward(self, image):
         # Transform the image from [0, 255] to [-0.5, 0.5]
         image = (image / 255) - 0.5
         amount_of_filters = 8
         image_hight, image_width = image.shape
-        amount_of_classes = 10
 
         self.conv_layer = ConvLayer3x3(amount_of_filters)
         # -2 because the conv layer will shift 2 elements
@@ -26,13 +26,23 @@ class CNN:
         pool_hight = int(conv_hight / 2)
         pool_width = int(conv_width / 2)
         self.fc_layer = FullyConnectedLayer(
-            pool_hight * pool_width * amount_of_filters, amount_of_classes
+            pool_hight * pool_width * amount_of_filters, self.amount_of_classes
         )
 
         output = self.conv_layer.convolve(image)
         output = self.maxpool_layer.pool(output)
         predictions = self.fc_layer.feedforward(output)
         return predictions
+
+    def backprop(self, out, correct_label):
+        gradient = np.zeros(self.amount_of_classes)
+        # Loss = -ln(x)
+        gradient[correct_label] = -1 / out[correct_label]
+        gradient = self.fc_layer.backprop(gradient)
+        # gradient = self.maxpool_layer.backprop(gradient)
+        # gradient = self.conv_layer.backprop(gradient)
+
+        return gradient
 
     def train(self, train_data, train_labels):
         loss = 0
@@ -43,6 +53,5 @@ class CNN:
             pred_label = np.argmax(predictions)
             accuracy += int(pred_label == tlabel)
             loss += self.softmax_loss(predictions[tlabel])
-            # TODO: backprop
 
         return accuracy, loss

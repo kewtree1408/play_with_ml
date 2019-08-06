@@ -14,7 +14,7 @@ class FullyConnectedLayer:
             / flatten_filters_amount
         )
         self.biases = np.random.randn(class_amount) / class_amount
-        self.learn_rate = 0.01
+        self.learn_rate = 0.005
 
         # variables for derivative calculus
         self.last_shape = None
@@ -48,9 +48,9 @@ class FullyConnectedLayer:
         tc_exp = t_exp[idx]
 
         # calculate gradients of out[i] against totals
-        d_out_d_t = -tc_exp * t_exp / (S**2)
+        d_out_d_t = -tc_exp * t_exp / (S ** 2)
         # case when k == correct_class
-        d_out_d_t[idx] = tc_exp * (S - tc_exp) / (S**2)
+        d_out_d_t[idx] = tc_exp * (S - tc_exp) / (S ** 2)
 
         # caclucate gradients of weights and biases
         # base on this equation: totals = w * input + b
@@ -68,7 +68,6 @@ class FullyConnectedLayer:
 
         return d_L_d_w, d_L_d_b, d_L_d_input
 
-
     def backprop(self, gradient):
         # gradient is the one from previous layer (from class probability inputs)
 
@@ -80,6 +79,6 @@ class FullyConnectedLayer:
             # Update weights / biases
             self.weights -= self.learn_rate * d_L_d_w
             self.biases -= self.learn_rate * d_L_d_b
+            # import ipdb; ipdb.set_trace()
 
         return d_L_d_input.reshape(self.last_shape)
-

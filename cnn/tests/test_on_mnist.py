@@ -7,7 +7,7 @@ from maxpool_layer import MaxPoolLayer2
 from cnn import CNN
 
 # Download MNIST dataset
-FIRST_N = 100
+FIRST_N = 1000
 TRAIN_IMAGES = mnist.train_images()[:FIRST_N]
 TRAIN_LABELS = mnist.train_labels()[:FIRST_N]
 
@@ -34,5 +34,5 @@ def test_mnist_train():
     np.random.seed(0)
     conv_net = CNN()
     acc, loss = conv_net.train(TRAIN_IMAGES, TRAIN_LABELS)
-    assert acc == 9
-    assert np.around(loss, decimals=2) == 230.83
+    assert acc == 79
+    assert np.around(loss, decimals=2) == 1.15

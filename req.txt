@@ -5,3 +5,4 @@ isort
 mypy
 black
 mnist
+flake8

@@ -117,3 +117,41 @@ def test_pool():
     res = p.pool(filters)
     expected = np.array([[[80, 55], [31, 41]], [[90, 90], [95, 95]]])
     np.testing.assert_array_equal(res, expected)
+
+
+def test_backpropagation():
+    # 2 matricies 2x2
+    backprop_filters = np.arange(10,18).reshape(2,2,2)
+    # backprop_filters = np.array([
+    #    [[10, 11],
+    #     [12, 13]],
+    #    [[14, 15],
+    #     [16, 17]]])
+    # shopuld be increased to 2 matricies 4x4
+    p = MaxPoolLayer2()
+    p.last_input = np.arange(100,132).reshape(4,4,2)
+    res = p.backpropagation(backprop_filters)
+    # res2 = p.backprop(backprop_filters)
+
+    # import ipdb; ipdb.set_trace()
+    expected = np.array([[[10., 11.],
+        [ 0.,  0.],
+        [12., 13.],
+        [ 0.,  0.]],
+
+       [[ 0.,  0.],
+        [ 0.,  0.],
+        [ 0.,  0.],
+        [ 0.,  0.]],
+
+       [[14., 15.],
+        [ 0.,  0.],
+        [16., 17.],
+        [ 0.,  0.]],
+
+       [[ 0.,  0.],
+        [ 0.,  0.],
+        [ 0.,  0.],
+        [ 0.,  0.]]])
+
+    np.testing.assert_array_equal(res, expected)

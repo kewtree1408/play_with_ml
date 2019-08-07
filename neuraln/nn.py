@@ -1,9 +1,10 @@
 from typing import Callable
 
 import numpy as np
-from activations import sigmoid
-from derivatives import sigmoid_deriv
-from losses import mse
+
+from .activations import sigmoid
+from .derivatives import sigmoid_deriv
+from .losses import mse
 
 
 class Neuron:

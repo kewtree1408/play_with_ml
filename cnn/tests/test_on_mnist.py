@@ -1,10 +1,10 @@
 import mnist
 import numpy as np
 
-from conv_layer import ConvLayer3x3
-from fc_layer import FullyConnectedLayer
-from maxpool_layer import MaxPoolLayer2
-from cnn import CNN
+from cnn.cnn import CNN
+from cnn.conv_layer import ConvLayer3x3
+from cnn.fc_layer import FullyConnectedLayer
+from cnn.maxpool_layer import MaxPoolLayer2
 
 # Download MNIST dataset
 FIRST_N = 1000
@@ -17,11 +17,11 @@ def test_mnist_shape():
     # Learn more at https://github.com/datapythonista/mnist
 
     conv = ConvLayer3x3(8)
-    output = conv.convolve(TRAIN_IMAGES[0])
+    output = conv.feedforward(TRAIN_IMAGES[0])
     assert output.shape == (26, 26, 8)
 
     p = MaxPoolLayer2()
-    output = p.pool(output)
+    output = p.feedforward(output)
     assert output.shape == (13, 13, 8)
 
     amount_of_classes = 20

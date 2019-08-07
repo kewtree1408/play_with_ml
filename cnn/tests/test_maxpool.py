@@ -1,6 +1,6 @@
 import numpy as np
 
-from maxpool_layer import MaxPoolLayer2
+from cnn.maxpool_layer import MaxPoolLayer2
 
 # Tests for this example:
 # https://victorzhou.com/pool-ac441205fd06dc037b3db2dbf05660f7.gif
@@ -106,7 +106,7 @@ def test_divide_2_filters():
         _assert_divided_parts(res, expected)
 
 
-def test_pool():
+def test_feedforward():
     filter1 = np.array([[0, 50, 0, 29], [0, 80, 31, 2], [33, 90, 0, 75], [0, 9, 0, 95]])
     filter1 = filter1[:, :, np.newaxis]
     filter2 = np.array([[0, 55, 0, 29], [20, 0, 41, 33], [0, 90, 0, 0], [0, 57, 0, 95]])
@@ -114,14 +114,14 @@ def test_pool():
     filters = np.concatenate((filter1, filter2), axis=2)
 
     p = MaxPoolLayer2()
-    res = p.pool(filters)
+    res = p.feedforward(filters)
     expected = np.array([[[80, 55], [31, 41]], [[90, 90], [95, 95]]])
     np.testing.assert_array_equal(res, expected)
 
 
 def test_backpropagation():
     # 2 matricies 2x2
-    backprop_filters = np.arange(10,18).reshape(2,2,2)
+    backprop_filters = np.arange(10, 18).reshape(2, 2, 2)
     # backprop_filters = np.array([
     #    [[10, 11],
     #     [12, 13]],
@@ -129,29 +129,18 @@ def test_backpropagation():
     #     [16, 17]]])
     # shopuld be increased to 2 matricies 4x4
     p = MaxPoolLayer2()
-    p.last_input = np.arange(100,132).reshape(4,4,2)
-    res = p.backpropagation(backprop_filters)
-    # res2 = p.backprop(backprop_filters)
+    p.last_input = np.arange(100, 132).reshape(4, 4, 2)
+    res = p.backprop(backprop_filters)
+    # res2 = p.backprop2(backprop_filters)
 
     # import ipdb; ipdb.set_trace()
-    expected = np.array([[[10., 11.],
-        [ 0.,  0.],
-        [12., 13.],
-        [ 0.,  0.]],
-
-       [[ 0.,  0.],
-        [ 0.,  0.],
-        [ 0.,  0.],
-        [ 0.,  0.]],
-
-       [[14., 15.],
-        [ 0.,  0.],
-        [16., 17.],
-        [ 0.,  0.]],
-
-       [[ 0.,  0.],
-        [ 0.,  0.],
-        [ 0.,  0.],
-        [ 0.,  0.]]])
+    expected = np.array(
+        [
+            [[10.0, 11.0], [0.0, 0.0], [12.0, 13.0], [0.0, 0.0]],
+            [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+            [[14.0, 15.0], [0.0, 0.0], [16.0, 17.0], [0.0, 0.0]],
+            [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+        ]
+    )
 
     np.testing.assert_array_equal(res, expected)

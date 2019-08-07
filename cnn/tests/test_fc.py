@@ -1,6 +1,6 @@
 import numpy as np
 
-from fc_layer import FullyConnectedLayer
+from cnn.fc_layer import FullyConnectedLayer
 
 
 def test_feedworward():

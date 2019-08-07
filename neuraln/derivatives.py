@@ -1,5 +1,6 @@
 import numpy as np
-from activations import sigmoid
+
+from .activations import sigmoid
 
 
 def sigmoid_deriv(x: float) -> float:

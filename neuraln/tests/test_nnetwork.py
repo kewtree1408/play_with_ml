@@ -1,7 +1,8 @@
-import numpy as np
 from unittest.mock import MagicMock
 
-from nn import NeuralNetwork1HiddenLayer
+import numpy as np
+
+from neuraln.nn import NeuralNetwork1HiddenLayer
 
 
 def test_nn_feedforward():

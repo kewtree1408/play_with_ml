@@ -1,8 +1,8 @@
 import numpy as np
 
-from conv_layer import ConvLayer3x3
-from maxpool_layer import MaxPoolLayer2
-from fc_layer import FullyConnectedLayer
+from .conv_layer import ConvLayer3x3
+from .fc_layer import FullyConnectedLayer
+from .maxpool_layer import MaxPoolLayer2
 
 
 class CNN:
@@ -32,8 +32,8 @@ class CNN:
         image = (image / 255) - 0.5
         assert image.shape == self.expected_image_shape
 
-        output = self.conv_layer.convolve(image)
-        output = self.maxpool_layer.pool(output)
+        output = self.conv_layer.feedforward(image)
+        output = self.maxpool_layer.feedforward(output)
         predictions = self.fc_layer.feedforward(output)
         return predictions
 

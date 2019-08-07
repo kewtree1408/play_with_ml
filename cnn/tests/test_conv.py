@@ -1,6 +1,6 @@
 import numpy as np
 
-from conv_layer import ConvLayer3x3
+from cnn.conv_layer import ConvLayer3x3
 
 # Tests for this example:
 # http://deeplearning.net/software/theano/_images/numerical_no_padding_no_strides.gif
@@ -45,7 +45,7 @@ def test_divide_input():
         np.testing.assert_array_equal(part_result, part_expected)
 
 
-def test_convolve_1_filter():
+def test_feedforward_1_filter():
     filters_amount = 1  # depth
     cn = ConvLayer3x3(filters_amount)
     input_data = np.array(
@@ -62,11 +62,11 @@ def test_convolve_1_filter():
     expected_output = np.array(
         [[[12], [12], [17]], [[10], [17], [19]], [[9], [6], [14]]]
     )
-    output_result = cn.convolve(input_data)
+    output_result = cn.feedforward(input_data)
     np.testing.assert_array_equal(output_result, expected_output)
 
 
-def test_convolve_3_filters():
+def test_feedforward_3_filters():
     filters_amount = 3  # depth
     cn = ConvLayer3x3(filters_amount)
     # reassign filter for easier testing
@@ -86,7 +86,7 @@ def test_convolve_3_filters():
             [2, 0, 0, 0, 1],
         ]
     )
-    output_result = cn.convolve(input_data)
+    output_result = cn.feedforward(input_data)
     expected_output = np.array(
         [
             [[12, 12, 12], [12, 12, 12], [17, 17, 17]],

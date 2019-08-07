@@ -48,7 +48,7 @@ class MaxPoolLayer2:
                     i_jump : i_jump + jump, j_jump : j_jump + jump
                 ], i, j
 
-    def backpropagation(self, d_L_d_out):
+    def backprop(self, d_L_d_out):
         """
         :param d_l_d_out: gradient from the previous layer
         """
@@ -62,7 +62,7 @@ class MaxPoolLayer2:
                     d_L_d_input[i, j] = d_L_d_out[idx, jdx]
         return d_L_d_input
 
-    # def backprop(self, d_L_d_out):
+    # def backprop2(self, d_L_d_out):
     #     '''
     #     Performs a backward pass of the maxpool layer.
     #     Returns the loss gradient for this layer's inputs.
@@ -83,7 +83,7 @@ class MaxPoolLayer2:
 
     #     return d_L_d_input
 
-    def pool(self, input_filters):
+    def feedforward(self, input_filters):
         # input_filters is a 3D array from Conv layer
         self.last_input = input_filters
 

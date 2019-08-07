@@ -1,6 +1,6 @@
 import numpy as np
 
-from nn import Neuron
+from neuraln.nn import Neuron
 
 
 def test_feedforward_without_hidden_layers():

@@ -4,4 +4,4 @@ pytest
 isort
 mypy
 black
-mnist-0.2.2
+mnist

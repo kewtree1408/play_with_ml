@@ -27,7 +27,7 @@ class ConvLayer3x3:
         assert image_part.shape == conv_filter.shape
         return np.sum(np.multiply(image_part, conv_filter))
 
-    def convolve(self, input_image: np.ndarray) -> np.ndarray:
+    def feedforward(self, input_image: np.ndarray) -> np.ndarray:
         height, length = input_image.shape
         output_data = np.zeros((height - 2, length - 2, self.filters_amount))
         for img_part, i, j in self.divide_input(input_image):

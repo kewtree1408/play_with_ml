@@ -11,6 +11,7 @@ class ConvLayer3x3:
         self.filters = (
             np.random.rand(filters_amount, self.filter_size, self.filter_size) / 9
         )
+        self.learning_rate = 0.005
 
     @staticmethod
     def divide_input(
@@ -28,10 +29,23 @@ class ConvLayer3x3:
         return np.sum(np.multiply(image_part, conv_filter))
 
     def feedforward(self, input_image: np.ndarray) -> np.ndarray:
+        self.last_image = input_image
         height, length = input_image.shape
         output_data = np.zeros((height - 2, length - 2, self.filters_amount))
         for img_part, i, j in self.divide_input(input_image):
-            output_data[i, j] = np.sum(img_part * self.filters, axis=(1, 2))
+            # Next line is the same as, but faster:
             # for conv_filter in self.filters:
             #     output_data[i, j] = self.dot_sum(img_part, conv_filter)
+            output_data[i, j] = np.sum(img_part * self.filters, axis=(1, 2))
         return output_data
+
+    def backprop(self, d_L_d_out):
+        # The gradient: d_L_d_filters = d_L_d_out * d_out_d_filter
+        # d_out_d_filter = part_of_image from self.divide_input()
+        d_L_d_filters = np.zeros(self.filters.shape)
+        for img_part, i, j in self.divide_input(self.last_image):
+            for f in range(self.filters_amount):
+                d_L_d_filters[f] += d_L_d_out[i, j, f] * img_part
+
+        self.filters = -self.learning_rate * d_L_d_filters
+        return d_L_d_filters

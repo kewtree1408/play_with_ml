@@ -42,9 +42,8 @@ class CNN:
         # Loss = -ln(x)
         gradient[correct_label] = -1 / out[correct_label]
         gradient = self.fc_layer.backprop(gradient)
-        # import ipdb; ipdb.set_trace()
-        # gradient = self.maxpool_layer.backprop(gradient)
-        # gradient = self.conv_layer.backprop(gradient)
+        gradient = self.maxpool_layer.backprop(gradient)
+        gradient = self.conv_layer.backprop(gradient)
 
         return gradient
 

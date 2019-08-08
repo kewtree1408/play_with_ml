@@ -131,16 +131,25 @@ def test_backpropagation():
     p = MaxPoolLayer2()
     p.last_input = np.arange(100, 132).reshape(4, 4, 2)
     res = p.backprop(backprop_filters)
-    # res2 = p.backprop2(backprop_filters)
 
-    # import ipdb; ipdb.set_trace()
-    expected = np.array(
-        [
-            [[10.0, 11.0], [0.0, 0.0], [12.0, 13.0], [0.0, 0.0]],
-            [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
-            [[14.0, 15.0], [0.0, 0.0], [16.0, 17.0], [0.0, 0.0]],
-            [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
-        ]
-    )
+    expected = np.array([[[ 0.,  0.],
+        [ 0.,  0.],
+        [ 0.,  0.],
+        [ 0.,  0.]],
+
+       [[ 0.,  0.],
+        [10., 11.],
+        [ 0.,  0.],
+        [12., 13.]],
+
+       [[ 0.,  0.],
+        [ 0.,  0.],
+        [ 0.,  0.],
+        [ 0.,  0.]],
+
+       [[ 0.,  0.],
+        [14., 15.],
+        [ 0.,  0.],
+        [16., 17.]]])
 
     np.testing.assert_array_equal(res, expected)

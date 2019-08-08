@@ -50,38 +50,22 @@ class MaxPoolLayer2:
 
     def backprop(self, d_L_d_out):
         """
-        :param d_l_d_out: gradient from the previous layer
+        :param d_l_d_out: the loss gradient from the previous step
         """
         d_L_d_input = np.zeros(self.last_input.shape)
-        height, width, num_filters = d_L_d_input.shape
-        for i in range(height):
-            for j in range(width):
-                idx = int(i / self.size)
-                jdx = int(j / self.size)
-                if i % self.size == 0 and j % self.size == 0:
-                    d_L_d_input[i, j] = d_L_d_out[idx, jdx]
+
+        for img_part, idx, jdx in self.divide_input(self.last_input):
+            height, weight, depth = img_part.shape
+            amax = np.amax(img_part, axis=(0, 1))
+
+            for i in range(height):
+                for j in range(weight):
+                    for f in range(depth):
+                        # If this pixel was the max value, copy the gradient to it.
+                        if img_part[i, j, f] == amax[f]:
+                            d_L_d_input[idx * 2 + i, jdx * 2 + j, f] = d_L_d_out[idx, jdx, f]
+
         return d_L_d_input
-
-    # def backprop2(self, d_L_d_out):
-    #     '''
-    #     Performs a backward pass of the maxpool layer.
-    #     Returns the loss gradient for this layer's inputs.
-    #     - d_L_d_out is the loss gradient for this layer's outputs.
-    #     '''
-    #     d_L_d_input = np.zeros(self.last_input.shape)
-
-    #     for im_region, i, j in self.divide_input(self.last_input):
-    #         h, w, f = im_region.shape
-    #         amax = np.amax(im_region, axis=(0, 1))
-
-    #         for i2 in range(h):
-    #             for j2 in range(w):
-    #                 for f2 in range(f):
-    #                     # If this pixel was the max value, copy the gradient to it.
-    #                     if im_region[i2, j2, f2] == amax[f2]:
-    #                         d_L_d_input[i * 2 + i2, j * 2 + j2, f2] = d_L_d_out[i, j, f2]
-
-    #     return d_L_d_input
 
     def feedforward(self, input_filters):
         # input_filters is a 3D array from Conv layer

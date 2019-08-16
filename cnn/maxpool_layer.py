@@ -74,10 +74,10 @@ class MaxPoolLayer2:
         self.last_input = input_filters
 
         height, width, num_filters = input_filters.shape
-        h = height // self.size
-        l = width // self.size
+        half_height = height // self.size
+        half_width = width // self.size
 
-        output = np.zeros((h, l, num_filters))
+        output = np.zeros((half_height, half_width, num_filters))
         for part, i, j in self.divide_input(input_filters):
             # import ipdb; ipdb.set_trace()
             output[i, j] = np.max(part, axis=(0, 1))

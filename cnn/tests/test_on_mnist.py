@@ -1,3 +1,5 @@
+import pytest
+
 import mnist
 import numpy as np
 
@@ -14,7 +16,6 @@ def test_mnist_shape():
     # Download MNIST dataset
     FIRST_N = 100
     train_images = mnist.train_images()[:FIRST_N]
-    train_labels = mnist.train_labels()[:FIRST_N]
 
     conv = ConvLayer3x3(8)
     output = conv.feedforward(train_images[0])
@@ -30,6 +31,7 @@ def test_mnist_shape():
     assert output.shape == (amount_of_classes,)
 
 
+@pytest.mark.slow
 def test_mnist_train_one_epoch():
     FIRST_N = 1000
     train_images = mnist.train_images()[:FIRST_N]
@@ -42,6 +44,7 @@ def test_mnist_train_one_epoch():
     assert np.around(loss, decimals=2) == 69.8
 
 
+@pytest.mark.slow
 def test_mnist_train_and_test():
     # Download MNIST dataset
     FIRST_N = 1000

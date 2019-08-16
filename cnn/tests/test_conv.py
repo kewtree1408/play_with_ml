@@ -35,7 +35,8 @@ def test_divide_input():
         (np.array([[2, 2, 3], [0, 2, 2], [0, 0, 1]]), 2, 2),
     ]
 
-    divided_parts = list(ConvLayer3x3.divide_input(input_data))
+    conv_layer = ConvLayer3x3(3)
+    divided_parts = list(conv_layer.divide_input(input_data))
     assert len(divided_parts) == expected_shape
     for res, expected in zip(divided_parts, expected_parts):
         part_result, i_result, j_result = res

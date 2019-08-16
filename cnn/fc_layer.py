@@ -9,10 +9,8 @@ class FullyConnectedLayer:
     """
 
     def __init__(self, flatten_filters_amount, class_amount):
-        self.weights = (
-            np.random.randn(flatten_filters_amount, class_amount)
-            / flatten_filters_amount
-        )
+        rand_weights = np.random.randn(flatten_filters_amount, class_amount)
+        self.weights = rand_weights / flatten_filters_amount
         self.biases = np.random.randn(class_amount) / class_amount
         self.learn_rate = 0.005
 

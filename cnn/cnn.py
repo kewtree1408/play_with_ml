@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import numpy as np
 
 from .conv_layer import ConvLayer3x3
@@ -6,7 +8,7 @@ from .maxpool_layer import MaxPoolLayer2
 
 
 class CNN:
-    def __init__(self, epoch_amount=3):
+    def __init__(self, epoch_amount: int = 3) -> None:
         self.epoch_amount = epoch_amount
         self.cross_entropy_loss = lambda x: -np.log(x)
         self.amount_of_classes = 10
@@ -27,7 +29,7 @@ class CNN:
             pool_hight * pool_width * amount_of_filters, self.amount_of_classes
         )
 
-    def feedforward(self, image):
+    def feedforward(self, image: np.ndarray) -> np.ndarray:
         # Transform the image from [0, 255] to [-0.5, 0.5]
         image = (image / 255) - 0.5
         assert image.shape == self.expected_image_shape
@@ -37,7 +39,7 @@ class CNN:
         predictions = self.fc_layer.feedforward(output)
         return predictions
 
-    def backprop(self, out, correct_label):
+    def backprop(self, out: np.ndarray, correct_label: int) -> np.ndarray:
         gradient = np.zeros(self.amount_of_classes)
         # Loss = -ln(x)
         gradient[correct_label] = -1 / out[correct_label]
@@ -47,7 +49,9 @@ class CNN:
 
         return gradient
 
-    def _cacl_accuracy_and_loss(self, predicted_labels, real_label):
+    def _cacl_accuracy_and_loss(
+        self, predicted_labels: np.ndarray, real_label: int
+    ) -> Tuple[float, float]:
         # Find the class (0-10) with the higest probability
         pred_label = np.argmax(predicted_labels)
         accuracy = int(pred_label == real_label)

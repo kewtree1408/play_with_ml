@@ -6,9 +6,9 @@ from .maxpool_layer import MaxPoolLayer2
 
 
 class CNN:
-    def __init__(self):
-        self.epoches = 100
-        self.softmax_loss = lambda x: -np.log(x)
+    def __init__(self, epoch_amount=3):
+        self.epoch_amount = epoch_amount
+        self.cross_entropy_loss = lambda x: -np.log(x)
         self.amount_of_classes = 10
 
         amount_of_filters = 8
@@ -47,7 +47,14 @@ class CNN:
 
         return gradient
 
-    def train(self, train_data, train_labels):
+    def _cacl_accuracy_and_loss(self, predicted_labels, real_label):
+        # Find the class (0-10) with the higest probability
+        pred_label = np.argmax(predicted_labels)
+        accuracy = int(pred_label == real_label)
+        loss = self.cross_entropy_loss(predicted_labels[real_label])
+        return accuracy, loss
+
+    def _train_one_epoch(self, train_data, train_labels):
         loss = 0
         accuracy = 0
         for idx, (tdata, tlabel) in enumerate(zip(train_data, train_labels)):
@@ -56,15 +63,34 @@ class CNN:
                 loss = 0
                 accuracy = 0
             predictions = self.feedforward(tdata)
-            # Find the class (0-10) with the higest prebability
-            pred_label = np.argmax(predictions)
-            accuracy += int(pred_label == tlabel)
-            loss += self.softmax_loss(predictions[tlabel])
-
             self.backprop(predictions, tlabel)
 
+            acc, loss_ = self._cacl_accuracy_and_loss(predictions, tlabel)
+            accuracy += acc
+            loss += loss_
+
         _print_loss_and_acc(idx, loss, accuracy)
-        return accuracy, loss / 100
+        return accuracy, loss
+
+    def train(self, train_set, train_labels):
+        for epoch in range(self.epoch_amount):
+            # Shuffle the training data
+            permutation = np.random.permutation(len(train_set))
+            train_set_epoch = train_set[permutation]
+            train_labels_epoch = train_labels[permutation]
+            self._train_one_epoch(train_set_epoch, train_labels_epoch)
+
+    def test(self, test_set, test_labels):
+        num_tests = len(test_set)
+        accuracy = 0
+        loss = 0
+        for data, tlabel in zip(test_set, test_labels):
+            predictions = self.feedforward(data)
+            acc, loss_ = self._cacl_accuracy_and_loss(predictions, tlabel)
+            accuracy += acc
+            loss += loss_
+
+        return loss / num_tests, accuracy / num_tests
 
 
 def _print_loss_and_acc(idx, loss, accuracy):

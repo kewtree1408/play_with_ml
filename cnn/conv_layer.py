@@ -13,15 +13,17 @@ class ConvLayer3x3:
         )
         self.learning_rate = 0.005
 
-    @staticmethod
     def divide_input(
-        input_image: np.ndarray
+        self, input_image: np.ndarray
     ) -> Generator[Tuple[np.ndarray, int, int], None, None]:
         """input_image is 2D"""
-        height, length = input_image.shape
-        for i in range(height - 2):
-            for j in range(length - 2):
-                yield input_image[i : i + 3, j : j + 3], i, j
+        height, weight = input_image.shape
+        boundary = self.filter_size - 1
+        for i in range(height - boundary):
+            for j in range(weight - boundary):
+                yield input_image[
+                    i : i + self.filter_size, j : j + self.filter_size
+                ], i, j
 
     @staticmethod
     def dot_sum(image_part, conv_filter):
@@ -30,8 +32,11 @@ class ConvLayer3x3:
 
     def feedforward(self, input_image: np.ndarray) -> np.ndarray:
         self.last_image = input_image
-        height, length = input_image.shape
-        output_data = np.zeros((height - 2, length - 2, self.filters_amount))
+        height, weight = input_image.shape
+        boundary = self.filter_size - 1
+        output_data = np.zeros(
+            (height - boundary, weight - boundary, self.filters_amount)
+        )
         for img_part, i, j in self.divide_input(input_image):
             # Next line is the same as, but faster:
             # for conv_filter in self.filters:
@@ -47,5 +52,5 @@ class ConvLayer3x3:
             for f in range(self.filters_amount):
                 d_L_d_filters[f] += d_L_d_out[i, j, f] * img_part
 
-        self.filters = -self.learning_rate * d_L_d_filters
+        self.filters -= self.learning_rate * d_L_d_filters
         return d_L_d_filters

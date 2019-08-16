@@ -16,7 +16,6 @@ def test_nn_feedforward():
 def test_nn_setup_neurons():
     # try set up neurons for a few times
     nn = NeuralNetwork1HiddenLayer()
-    deafult_weights = np.array([0.0 for _ in range(6)])
     expected_weights = np.array([0.0, 0.0])
     np.testing.assert_array_equal(nn.hidden_neuron_1.weights, expected_weights)
     np.testing.assert_array_equal(nn.hidden_neuron_2.weights, expected_weights)

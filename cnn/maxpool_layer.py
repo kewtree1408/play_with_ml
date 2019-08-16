@@ -36,12 +36,12 @@ class MaxPoolLayer2:
             input_filters = self.zero_padding(input_filters)
         height, width, num_filters = input_filters.shape
 
-        h = height // self.size
-        l = width // self.size
+        half_height = height // self.size
+        half_length = width // self.size
 
         jump = self.size
-        for i in range(h):
-            for j in range(l):
+        for i in range(half_height):
+            for j in range(half_length):
                 i_jump = i * jump
                 j_jump = j * jump
                 yield input_filters[
@@ -63,7 +63,9 @@ class MaxPoolLayer2:
                     for f in range(depth):
                         # If this pixel was the max value, copy the gradient to it.
                         if img_part[i, j, f] == amax[f]:
-                            d_L_d_input[idx * 2 + i, jdx * 2 + j, f] = d_L_d_out[idx, jdx, f]
+                            d_L_d_input[idx * 2 + i, jdx * 2 + j, f] = d_L_d_out[
+                                idx, jdx, f
+                            ]
 
         return d_L_d_input
 

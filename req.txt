@@ -1,7 +1,7 @@
 numpy
 tox
 pytest
-isort
+isort==4.3.20
 mypy
 black
 mnist

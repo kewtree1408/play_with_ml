@@ -4,7 +4,7 @@ import numpy as np
 
 
 class ConvLayer3x3:
-    def __init__(self, filters_amount: int):
+    def __init__(self, filters_amount: int) -> None:
         self.filters_amount = filters_amount
         self.filter_size = 3  # because ConvLayer3x3, but can be any number
         # 9 - magic number for Xavier - ? TODO!
@@ -26,7 +26,7 @@ class ConvLayer3x3:
                 ], i, j
 
     @staticmethod
-    def dot_sum(image_part, conv_filter):
+    def dot_sum(image_part: np.ndarray, conv_filter: np.ndarray):
         assert image_part.shape == conv_filter.shape
         return np.sum(np.multiply(image_part, conv_filter))
 
@@ -44,9 +44,9 @@ class ConvLayer3x3:
             output_data[i, j] = np.sum(img_part * self.filters, axis=(1, 2))
         return output_data
 
-    def backprop(self, d_L_d_out):
+    def backprop(self, d_L_d_out: np.ndarray) -> np.ndarray:
         # The gradient: d_L_d_filters = d_L_d_out * d_out_d_filter
-        # d_out_d_filter = part_of_image from self.divide_input()
+        # d_out_d_filter is part_of_image from self.divide_input()
         d_L_d_filters = np.zeros(self.filters.shape)
         for img_part, i, j in self.divide_input(self.last_image):
             for f in range(self.filters_amount):

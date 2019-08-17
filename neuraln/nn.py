@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Tuple, Callable
 
 import numpy as np
 
@@ -15,17 +15,17 @@ class Neuron:
         self.bias = bias
         self.activation_func = activation_func
 
-    def act_sum(self, inputs):
+    def act_sum(self, inputs: np.ndarray) -> np.ndarray:
         # sum for activation function or for backpropagation derivative
         return np.dot(inputs, self.weights) + self.bias
 
-    def feedforward(self, inputs: np.ndarray):
+    def feedforward(self, inputs: np.ndarray) -> float:
         assert inputs.shape == self.weights.shape
         return self.activation_func(self.act_sum(inputs))
 
 
 class NeuralNetwork1HiddenLayer:
-    def __init__(self):
+    def __init__(self) -> None:
         """
         A neural network with:
         - 2 inputs
@@ -44,7 +44,7 @@ class NeuralNetwork1HiddenLayer:
 
         self.setup_neurons()
 
-    def setup_neurons(self):
+    def setup_neurons(self) -> None:
         # Reassign values, because biases and weights might be changed
         hiddenn_weights_1 = self.weights[:2]
         hiddenn_weights_2 = self.weights[2:4]
@@ -54,13 +54,15 @@ class NeuralNetwork1HiddenLayer:
         self.hidden_neuron_2 = Neuron(hiddenn_weights_2, self.biases[1])
         self.output_neuron = Neuron(outputn_weights, self.biases[2])
 
-    def feedforward(self, inputs):
+    def feedforward(self, inputs: np.ndarray) -> float:
         ffd_hidden_1 = self.hidden_neuron_1.feedforward(inputs)
         ffd_hidden_2 = self.hidden_neuron_2.feedforward(inputs)
         self.hidden_inputs = np.array([ffd_hidden_1, ffd_hidden_2])
         return self.output_neuron.feedforward(self.hidden_inputs)
 
-    def backpropagation(self, train_data, y_true, y_pred):
+    def backpropagation(
+        self, train_data: np.ndarray, y_true: np.ndarray, y_pred: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
         assert train_data.shape[0] == 2
         d_L_d_ypred = -2 * (y_true - y_pred)
 
@@ -110,7 +112,7 @@ class NeuralNetwork1HiddenLayer:
         )
         return backprop_weights, backprop_biases
 
-    def train(self, train_data, y_trues):
+    def train(self, train_data: np.ndarray, y_trues: np.ndarray) -> float:
         for epoch in range(self.epochs):
             for input_data, y_true in zip(train_data, y_trues):
                 self.setup_neurons()
@@ -125,12 +127,12 @@ class NeuralNetwork1HiddenLayer:
                 loss = mse(y_trues, y_preds)
         return loss
 
-    def prediction(self, inputs):
+    def prediction(self, inputs: np.ndarray) -> float:
         # Return value which is predicted by network
         return self.feedforward(inputs)
 
 
-def main():
+def main() -> None:
     # Define dataset
     input_data = np.array(
         [[-2, -1], [25, 6], [17, 4], [-15, -6]]  # Alice  # Bob  # Charlie  # Diana

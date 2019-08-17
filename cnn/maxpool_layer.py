@@ -5,19 +5,19 @@ import numpy as np
 
 class MaxPoolLayer2:
     # Pooling with size 2
-    def __init__(self):
+    def __init__(self) -> None:
         self.size = 2
         self.pooling_method = np.max
 
     @staticmethod
-    def is_even(input_filters):
+    def is_even(input_filters: np.ndarray) -> bool:
         height, width, num_filters = input_filters.shape
         if height % 2 == 0 and width % 2 == 0:
             return True
         return False
 
     @staticmethod
-    def zero_padding(input_filters):
+    def zero_padding(input_filters: np.ndarray) -> np.ndarray:
         height, width, num_filters = input_filters.shape
         zero_padded_filters = input_filters
         if height % 2 != 0:
@@ -48,7 +48,7 @@ class MaxPoolLayer2:
                     i_jump : i_jump + jump, j_jump : j_jump + jump
                 ], i, j
 
-    def backprop(self, d_L_d_out):
+    def backprop(self, d_L_d_out: np.ndarray) -> np.ndarray:
         """
         :param d_l_d_out: the loss gradient from the previous step
         """
@@ -69,7 +69,7 @@ class MaxPoolLayer2:
 
         return d_L_d_input
 
-    def feedforward(self, input_filters):
+    def feedforward(self, input_filters: np.ndarray) -> np.ndarray:
         # input_filters is a 3D array from Conv layer
         self.last_input = input_filters
 

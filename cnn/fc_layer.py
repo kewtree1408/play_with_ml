@@ -1,5 +1,6 @@
 # Fully connected layer
 
+from typing import Tuple
 import numpy as np
 
 
@@ -8,18 +9,18 @@ class FullyConnectedLayer:
     Fully Connected Layer with Softmax activation
     """
 
-    def __init__(self, flatten_filters_amount, class_amount):
+    def __init__(self, flatten_filters_amount: int, class_amount: int) -> None:
         rand_weights = np.random.randn(flatten_filters_amount, class_amount)
         self.weights = rand_weights / flatten_filters_amount
         self.biases = np.random.randn(class_amount) / class_amount
         self.learn_rate = 0.005
 
         # variables for derivative calculus
-        self.last_shape = None
-        self.last_flat_input = None
-        self.last_totals = None
+        self.last_shape: np.ndarray
+        self.last_flat_input: np.ndarray
+        self.last_totals: np.ndarray
 
-    def feedforward(self, filters):
+    def feedforward(self, filters: np.ndarray) -> np.ndarray:
         self.last_shape = filters.shape
 
         flat_filters = filters.flatten()
@@ -31,7 +32,9 @@ class FullyConnectedLayer:
         e_xs = np.exp(totals)
         return e_xs / np.sum(e_xs)
 
-    def _caclulate_gradients(self, idx, d_L_d_out):
+    def _caclulate_gradients(
+        self, idx: int, d_L_d_out: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         # the goal is to calculate:
         # d_L_d_w = d_L_d_out * d_out_d_t * d_t_d_w
         # d_L_d_b = d_L_d_out * d_out_d_t * d_t_d_b
@@ -66,7 +69,7 @@ class FullyConnectedLayer:
 
         return d_L_d_w, d_L_d_b, d_L_d_input
 
-    def backprop(self, gradient):
+    def backprop(self, gradient: np.ndarray) -> np.ndarray:
         # gradient is the one from previous layer (from class probability inputs)
 
         # d_L_d_out is derivative(Loss) / derivative(out)

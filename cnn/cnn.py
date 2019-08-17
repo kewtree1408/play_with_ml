@@ -49,34 +49,38 @@ class CNN:
 
         return gradient
 
-    def _cacl_accuracy_and_loss(
+    def _cacl_correctness_and_loss(
         self, predicted_labels: np.ndarray, real_label: int
-    ) -> Tuple[float, float]:
+    ) -> Tuple[bool, float]:
         # Find the class (0-10) with the higest probability
         pred_label = np.argmax(predicted_labels)
-        accuracy = int(pred_label == real_label)
+        correct_prediction = pred_label == real_label
         loss = self.cross_entropy_loss(predicted_labels[real_label])
-        return accuracy, loss
+        return correct_prediction, loss
 
-    def _train_one_epoch(self, train_data, train_labels):
-        loss = 0
-        accuracy = 0
+    def _train_one_epoch(
+        self, train_data: np.ndarray, train_labels: np.ndarray
+    ) -> Tuple[int, float]:
+        loss = 0.0
+        correct_predictions = 0
         for idx, (tdata, tlabel) in enumerate(zip(train_data, train_labels)):
             if idx % 100 == 0:
-                _print_loss_and_acc(idx, loss, accuracy)
+                _print_loss_and_acc(idx, loss, correct_predictions)
                 loss = 0
-                accuracy = 0
+                correct_predictions = 0
             predictions = self.feedforward(tdata)
             self.backprop(predictions, tlabel)
 
-            acc, loss_ = self._cacl_accuracy_and_loss(predictions, tlabel)
-            accuracy += acc
+            correct_prediction, loss_ = self._cacl_correctness_and_loss(
+                predictions, tlabel
+            )
+            correct_predictions += int(correct_prediction)
             loss += loss_
 
-        _print_loss_and_acc(idx, loss, accuracy)
-        return accuracy, loss
+        _print_loss_and_acc(idx, loss, correct_predictions)
+        return correct_predictions, loss
 
-    def train(self, train_set, train_labels):
+    def train(self, train_set: np.ndarray, train_labels: np.ndarray) -> None:
         for epoch in range(self.epoch_amount):
             # Shuffle the training data
             permutation = np.random.permutation(len(train_set))
@@ -84,20 +88,22 @@ class CNN:
             train_labels_epoch = train_labels[permutation]
             self._train_one_epoch(train_set_epoch, train_labels_epoch)
 
-    def test(self, test_set, test_labels):
+    def test(
+        self, test_set: np.ndarray, test_labels: np.ndarray
+    ) -> Tuple[float, float]:
         num_tests = len(test_set)
         accuracy = 0
-        loss = 0
+        loss = 0.0
         for data, tlabel in zip(test_set, test_labels):
             predictions = self.feedforward(data)
-            acc, loss_ = self._cacl_accuracy_and_loss(predictions, tlabel)
+            acc, loss_ = self._cacl_correctness_and_loss(predictions, tlabel)
             accuracy += acc
             loss += loss_
 
         return loss / num_tests, accuracy / num_tests
 
 
-def _print_loss_and_acc(idx, loss, accuracy):
+def _print_loss_and_acc(idx: int, loss: float, accuracy: float) -> None:
     print(
         f"[Step {idx+1}] Past 100 steps: Average Loss {loss/100} | Accuracy: {accuracy}"
     )

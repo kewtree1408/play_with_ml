@@ -15,3 +15,7 @@ steps:
       versionSpec: '3.6'
   - script: python -m pip install --upgrade pip tox
     displayName: 'Install tools'
+  - script: ls -la
+    displayName: 'Check the root folder'
+  - script: tox .
+    displayName: 'Run tox'
